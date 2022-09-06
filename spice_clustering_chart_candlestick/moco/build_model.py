@@ -2,7 +2,7 @@
 import torchvision.models as torchvision_models
 
 # Vision Transformer
-import vits
+import moco.vits as vits
 
 # MoCo
 import moco.models as moco_models
@@ -35,7 +35,5 @@ def build_model(args):
             ),
             args,
         )
-
-    print("モデルの詳細'{}'".format(model))
 
     return model

@@ -13,7 +13,7 @@ import moco.transforms as moco_transforms
 class ChartDataModule(pl.LightningDataModule):
     def __init__(self, args):
         super().__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(args)
         self.args = args
 
         # 画像の加工処理群の取得
