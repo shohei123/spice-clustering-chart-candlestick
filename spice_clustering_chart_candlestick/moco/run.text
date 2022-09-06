@@ -1,0 +1,86 @@
+
+##################################################
+# 実行コマンドメモ
+##################################################
+
+python \
+train_moco.py \
+--batch_size 32 \
+--data_dir "../datasets/img" \
+--moco_mlp_dim 4096 \
+--epochs 100 \
+--learning_rate 0.6 \
+--momentum 0.9 \
+--seed 1234 \
+--persistent \
+--weight_decay 1e-6 \
+--workers 16 \
+--worm_up_epochs 10 \
+--stop_grad_conv1 \
+--crop_min 0.08 \
+--arch "vit_base" \
+--moco_dim 256 \
+--moco_mlp_dim 4096 \
+--moco_momentum 0.99 \
+--moco_temperature 1.0 \
+--moco_momentum_cosine \
+--optimizer_type "lars" \
+--accelerator "auto" \
+--auto_scale_batch_size True \
+--deterministic True \
+--devices "auto" \
+--max_epochs 1000 \
+--strategy ddp_spawn \
+--sync_batchnorm True \
+
+##################################################
+# 基本
+##################################################
+
+python \
+train_moco.py \
+
+##################################################
+# 学習器の引数
+##################################################
+
+--batch_size 256 \
+--data_dir "../datasets/chart" \
+--moco_mlp_dim 4096 \
+--epochs 100 \
+--learning_rate 0.6 \
+--momentum 0.9 \
+--seed 1234 \
+--persistent \
+--weight_decay 1e-6 \
+--workers 32 \
+--worm_up_epochs 10 \
+--stop_grad_conv1 \
+--crop_min 0.08 \
+
+
+##################################################
+# MoCo用の引数
+##################################################
+
+--arch "vit_base" \
+--moco_dim 256 \
+--moco_mlp_dim 4096 \
+--moco_momentum 0.99 \
+--moco_temperature 1.0 \
+--moco_momentum_cosine \
+--optimizer_type "lars" \
+--accelerator "auto" \
+
+
+##################################################
+# Trainer用の引数
+##################################################
+
+--accelerator "auto" \
+--auto_scale_batch_size True \
+--deterministic True \
+--devices "auto" \
+--max_epochs 1000 \
+--strategy ddp_spawn \
+--sync_batchnorm True \
