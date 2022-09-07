@@ -23,7 +23,9 @@ def main(args):
         pl.seed_everything(seed=args.seed, workers=True)
 
     # バッチ数を取得するための参照オブジェクト
-    obj_pick_up = {}
+    obj_pick_up = {
+        "num_batches": None,
+    }
 
     cdm = ChartDataModule(
         crop_min=args.crop_min,
@@ -40,6 +42,7 @@ def main(args):
         learning_rate=args.learning_rate,
         moco_dim=args.moco_dim,
         moco_mlp_dim=args.moco_mlp_dim,
+        moco_momentum=args.moco_momentum,
         moco_momentum_cosine=args.moco_momentum_cosine,
         momentum=args.momentum,
         num_batches=obj_pick_up["num_batches"],

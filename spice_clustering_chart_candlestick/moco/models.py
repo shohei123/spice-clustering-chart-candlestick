@@ -19,6 +19,7 @@ class MoCo(pl.LightningModule):
         learning_rate: float = 0.6,
         moco_dim: int = 256,
         moco_mlp_dim: int = 4096,
+        moco_momentum: float = 0.99,
         moco_momentum_cosine: bool = True,
         momentum: float = 0.9,
         num_batches: int = None,
@@ -29,6 +30,7 @@ class MoCo(pl.LightningModule):
         self.automatic_optimization = False
         self.epochs = epochs
         self.learning_rate = learning_rate
+        self.moco_momentum = moco_momentum
         self.moco_momentum_cosine = moco_momentum_cosine
         self.momentum = momentum
         self.num_batches = num_batches,

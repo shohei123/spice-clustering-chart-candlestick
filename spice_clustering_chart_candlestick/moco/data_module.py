@@ -19,7 +19,7 @@ class ChartDataModule(pl.LightningDataModule):
         data_dir: str = "../datasets/img",
         num_batches: int = None,
         persistent: bool = True,
-        workers: int = 16,
+        workers: int = 1,
     ):
         super().__init__()
         self.batch_size = batch_size
