@@ -21,6 +21,7 @@ class MoCo(pl.LightningModule):
         moco_mlp_dim: int = 4096,
         moco_momentum: float = 0.99,
         moco_momentum_cosine: bool = True,
+        moco_temperature: float = 1.0,
         momentum: float = 0.9,
         num_batches: int = None,
         optimizer_type: str = "lars",
@@ -32,6 +33,7 @@ class MoCo(pl.LightningModule):
         self.learning_rate = learning_rate
         self.moco_momentum = moco_momentum
         self.moco_momentum_cosine = moco_momentum_cosine
+        self.moco_temperature = moco_temperature
         self.momentum = momentum
         self.num_batches = num_batches,
         self.optimizer_type = optimizer_type
@@ -150,7 +152,9 @@ class MoCo(pl.LightningModule):
             k1 = self.momentum_encoder(x1)
             k2 = self.momentum_encoder(x2)
 
-        loss = contrastive_loss(q1, k2) + contrastive_loss(q2, k1)
+        loss = 0
+        loss += contrastive_loss(q1, k2, self.moco_temperature)
+        loss += contrastive_loss(q2, k1, self.moco_temperature)
         self.log("対照損失", loss, logger=True, prog_bar=True)
 
         # オプティマイザーによる更新手続きについて、要確認

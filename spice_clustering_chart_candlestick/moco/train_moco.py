@@ -44,6 +44,7 @@ def main(args):
         moco_mlp_dim=args.moco_mlp_dim,
         moco_momentum=args.moco_momentum,
         moco_momentum_cosine=args.moco_momentum_cosine,
+        moco_temperature=args.moco_temperature,
         momentum=args.momentum,
         num_batches=obj_pick_up["num_batches"],
         optimizer_type=args.optimizer_type,
