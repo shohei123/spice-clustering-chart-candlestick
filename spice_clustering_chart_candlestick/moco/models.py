@@ -166,7 +166,7 @@ class MoCo(pl.LightningModule):
             epochs=self.epochs,
             learning_rate=self.learning_rate,
             modified_epoch=self.current_epoch + batch_idx / self.num_batches,
-            optimizer=self.optimizer(),
+            optimizer=self.optimizers(),
             warm_up_epochs=self.warm_up_epochs,
         )
 
