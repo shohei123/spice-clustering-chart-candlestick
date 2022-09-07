@@ -10,7 +10,7 @@ import pytorch_lightning as pl
 import moco.callbacks as callbacks
 import moco.models as moco_models
 from moco.build_model import build_model
-from moco.data_module import ChartDataModule
+from moco.data_loader import ChartDataLoader
 
 # general
 from argparse import ArgumentParser
@@ -22,19 +22,15 @@ def main(args):
     if args.seed is not None:
         pl.seed_everything(seed=args.seed, workers=True)
 
-    # バッチ数を取得するための参照オブジェクト
-    obj_pick_up = {
-        "num_batches": None,
-    }
-
-    cdm = ChartDataModule(
+    cdl = ChartDataLoader(
         crop_min=args.crop_min,
-        data_dir=args.data_dir,
         batch_size=args.batch_size,
-        obj_pick_up=obj_pick_up,
+        data_dir=args.data_dir,
         persistent=args.persistent,
         workers=args.workers,
     )
+
+    num_batches = len(cdl)
 
     model = build_model(
         arch=args.arch,
@@ -46,7 +42,7 @@ def main(args):
         moco_momentum_cosine=args.moco_momentum_cosine,
         moco_temperature=args.moco_temperature,
         momentum=args.momentum,
-        num_batches=obj_pick_up["num_batches"],
+        num_batches=num_batches,
         optimizer_type=args.optimizer_type,
         stop_grad_conv1=args.stop_grad_conv1,
         weight_decay=args.weight_decay,
@@ -66,7 +62,7 @@ def main(args):
 
     trainer.fit(
         model=model,
-        datamodule=cdm,
+        train_dataloaders=cdl,
     )
 
 

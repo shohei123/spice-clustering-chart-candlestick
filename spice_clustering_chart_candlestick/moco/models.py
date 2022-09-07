@@ -15,6 +15,7 @@ class MoCo(pl.LightningModule):
     def __init__(
         self,
         base_encoder,
+        num_batches: int,
         epochs: int = 100,
         learning_rate: float = 0.6,
         moco_dim: int = 256,
@@ -23,7 +24,6 @@ class MoCo(pl.LightningModule):
         moco_momentum_cosine: bool = True,
         moco_temperature: float = 1.0,
         momentum: float = 0.9,
-        num_batches: int = None,
         optimizer_type: str = "lars",
         weight_decay: float = 1e-6,
     ):
