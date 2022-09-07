@@ -18,7 +18,6 @@ class MoCo(pl.LightningModule):
         args,
     ):
         super(MoCo, self).__init__()
-        self.save_hyperparameters(args)
         self.automatic_optimization = False
         self.args = args
 
