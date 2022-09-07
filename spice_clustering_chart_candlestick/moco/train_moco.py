@@ -49,9 +49,15 @@ def main(args):
     )
 
     trainer = pl.Trainer.from_argparse_args(
-        args,
+        accelerator=args.accelerator,
+        auto_scale_batch_size=args.auto_scale_batch_size,
         callbacks=[callbacks.PrintCallback()],
-        log_every_n_steps=5,  # バッチ数が少ないため、ロギングの刻み幅を小さくしている
+        deterministic=args.deterministic,
+        devices=args.devices,
+        log_every_n_steps=args.log_every_n_steps,
+        max_epochs=args.max_epochs,
+        strategy=args.strategy,
+        sync_batchnorm=args.sync_batchnorm,
     )
 
     trainer.fit(
