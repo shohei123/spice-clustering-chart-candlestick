@@ -22,9 +22,31 @@ def main(args):
     if args.seed is not None:
         pl.seed_everything(seed=args.seed, workers=True)
 
-    cdm = ChartDataModule(args)
+    # バッチ数を取得するための参照オブジェクト
+    obj_pick_up = {}
 
-    model = build_model(args)
+    cdm = ChartDataModule(
+        crop_min=args.crop_min,
+        data_dir=args.data_dir,
+        batch_size=args.batch_size,
+        obj_pick_up=obj_pick_up,
+        persistent=args.persistent,
+        workers=args.workers,
+    )
+
+    model = build_model(
+        arch=args.arch,
+        epochs=args.epochs,
+        learning_rate=args.learning_rate,
+        moco_dim=args.moco_dim,
+        moco_mlp_dim=args.moco_mlp_dim,
+        moco_momentum_cosine=args.moco_momentum_cosine,
+        momentum=args.momentum,
+        num_batches=obj_pick_up["num_batches"],
+        optimizer_type=args.optimizer_type,
+        stop_grad_conv1=args.stop_grad_conv1,
+        weight_decay=args.weight_decay,
+    )
 
     trainer = pl.Trainer.from_argparse_args(
         args,

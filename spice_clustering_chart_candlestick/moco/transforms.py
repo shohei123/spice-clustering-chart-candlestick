@@ -42,7 +42,7 @@ class Solarize(object):
         return ImageOps.solarize(x)
 
 
-def get_augmentations(args):
+def get_augmentations(crop_min: float = 0.08):
 
     # 画像データの加工処理郡
     normalize = transforms.Normalize(
@@ -52,7 +52,7 @@ def get_augmentations(args):
 
     # 画像加工についての参考論文: https://arxiv.org/abs/2006.07733
     augmentation1 = [
-        transforms.RandomResizedCrop(224, scale=(args.crop_min, 1.)),
+        transforms.RandomResizedCrop(224, scale=(crop_min, 1.)),
         transforms.RandomApply([
             transforms.ColorJitter(0.4, 0.4, 0.2, 0.1)  # not strengthened
         ], p=0.8),
@@ -64,7 +64,7 @@ def get_augmentations(args):
     ]
 
     augmentation2 = [
-        transforms.RandomResizedCrop(224, scale=(args.crop_min, 1.)),
+        transforms.RandomResizedCrop(224, scale=(crop_min, 1.)),
         transforms.RandomApply([
             transforms.ColorJitter(0.4, 0.4, 0.2, 0.1)  # not strengthened
         ], p=0.8),

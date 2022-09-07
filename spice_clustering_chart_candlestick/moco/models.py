@@ -15,24 +15,38 @@ class MoCo(pl.LightningModule):
     def __init__(
         self,
         base_encoder,
-        args,
+        epochs: int = 100,
+        learning_rate: float = 0.6,
+        moco_dim: int = 256,
+        moco_mlp_dim: int = 4096,
+        moco_momentum_cosine: bool = True,
+        momentum: float = 0.9,
+        num_batches: int = None,
+        optimizer_type: str = "lars",
+        weight_decay: float = 1e-6,
     ):
         super(MoCo, self).__init__()
         self.automatic_optimization = False
-        self.args = args
+        self.epochs = epochs
+        self.learning_rate = learning_rate
+        self.moco_momentum_cosine = moco_momentum_cosine
+        self.momentum = momentum
+        self.num_batches = num_batches,
+        self.optimizer_type = optimizer_type
+        self.weight_decay = weight_decay
 
         # 引数のbase_encoderは、既製品のエンコーダーモデルを流用
         self.base_encoder = base_encoder(
-            num_classes=args.moco_mlp_dim
+            num_classes=moco_mlp_dim
         )
         self.momentum_encoder = base_encoder(
-            num_classes=args.moco_mlp_dim
+            num_classes=moco_mlp_dim
         )
 
         # 既製品のエンコーダーの最終層と置換する投影・推論層
         self._build_projector_and_predictor_mlps(
-            args.moco_dim,
-            args.moco_mlp_dim
+            moco_dim,
+            moco_mlp_dim
         )
 
         # ベースエンコーダーのパラメーターをモーメンタムエンコーダーに移植
@@ -143,33 +157,36 @@ class MoCo(pl.LightningModule):
 
         # オプティマイザー内の学習率を更新
         moco_adjuster.adjust_learning_rate(
-            self.optimizer,
-            self.current_epoch + batch_idx / self.args.num_batches,
-            self.args
+            epochs=self.epochs,
+            learning_rate=self.learning_rate,
+            modified_epoch=self.current_epoch + batch_idx / self.num_batches,
+            optimizer=self.optimizer(),
+            warm_up_epochs=self.warm_up_epochs,
         )
 
-        if self.args.moco_momentum_cosine:
+        if self.moco_momentum_cosine:
             self.moco_momentum = moco.adjuster.adjust_moco_momentum(
-                self.current_epoch + batch_idx / self.args.num_batches,
-                self.args
+                epochs=self.epochs,
+                modified_epoch=self.current_epoch + batch_idx / self.num_batches,
+                moco_momentum=self.moco_momentum
             )
 
         self.manual_backward(loss)
         opt.step()
 
     def configure_optimizers(self):
-        if self.args.optimizer_type == "lars":
+        if self.optimizer_type == "lars":
             return moco.optimizer.LARS(
                 self.parameters(),
-                lr=self.args.learning_rate,
-                weight_decay=self.args.weight_decay,
-                momentum=self.args.momentum
+                lr=self.learning_rate,
+                weight_decay=self.weight_decay,
+                momentum=self.momentum
             )
-        elif self.args.optimizer_type == "adamw":
+        elif self.optimizer_type == "adamw":
             return torch.optim.AdamW(
                 self.parameters(),
-                self.args.learning_rate,
-                weight_decay=self.args.weight_decay
+                self.learning_rate,
+                weight_decay=self.weight_decay
             )
         else:
             raise NotImplementedError("指定されているoptimizerを利用してください。")
