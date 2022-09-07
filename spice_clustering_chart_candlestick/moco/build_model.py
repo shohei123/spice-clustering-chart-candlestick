@@ -23,6 +23,7 @@ def build_model(
     num_batches,
     optimizer_type,
     weight_decay,
+    warm_up_epochs,
     arch: str = "vit_base",
     stop_grad_conv1: bool = True,
 ):
@@ -48,6 +49,8 @@ def build_model(
             num_batches=num_batches,
             optimizer_type=optimizer_type,
             weight_decay=weight_decay,
+            warm_up_epochs=warm_up_epochs,
+
         )
 
     # torchvisionの組み込みモデルが指定されている場合
@@ -68,6 +71,7 @@ def build_model(
             num_batches=num_batches,
             optimizer_type=optimizer_type,
             weight_decay=weight_decay,
+            warm_up_epochs=warm_up_epochs,
         )
 
     return model

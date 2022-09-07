@@ -46,6 +46,7 @@ def main(args):
         optimizer_type=args.optimizer_type,
         stop_grad_conv1=args.stop_grad_conv1,
         weight_decay=args.weight_decay,
+        warm_up_epochs=args.warm_up_epochs,
     )
 
     trainer = pl.Trainer.from_argparse_args(

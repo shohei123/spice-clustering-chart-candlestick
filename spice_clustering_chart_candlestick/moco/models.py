@@ -26,6 +26,7 @@ class MoCo(pl.LightningModule):
         momentum: float = 0.9,
         optimizer_type: str = "lars",
         weight_decay: float = 1e-6,
+        warm_up_epochs: int = 10,
     ):
         super(MoCo, self).__init__()
         self.automatic_optimization = False
@@ -38,6 +39,7 @@ class MoCo(pl.LightningModule):
         self.num_batches = num_batches
         self.optimizer_type = optimizer_type
         self.weight_decay = weight_decay
+        self.warm_up_epochs = warm_up_epochs
 
         # 引数のbase_encoderは、既製品のエンコーダーモデルを流用
         self.base_encoder = base_encoder(
