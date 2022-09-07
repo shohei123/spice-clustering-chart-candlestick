@@ -35,7 +35,7 @@ class MoCo(pl.LightningModule):
         self.moco_momentum_cosine = moco_momentum_cosine
         self.moco_temperature = moco_temperature
         self.momentum = momentum
-        self.num_batches = num_batches,
+        self.num_batches = num_batches
         self.optimizer_type = optimizer_type
         self.weight_decay = weight_decay
 
