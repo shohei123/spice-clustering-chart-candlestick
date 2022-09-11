@@ -1,0 +1,46 @@
+data:
+  batch_size: 256
+  crop_min: 0.08 # 画像の拡縮処理の最小値
+  data_dir: ../datasets/chart
+  persistent: False # dp_spawnかつworker>0の場合は、ボトルネック解消のためTrueにする
+  workers: 2
+
+general:
+  seed: 123
+
+lr_scheduler:
+  first_cycle_steps: 100 # コサインアニーリングの初期周期のステップ数
+  cycle_mult: 1 # コサインアニーリングの次周期ごとのステップ増大倍率
+  gamma: 1.0 # コサインアニーリングの学習率の上限減衰率
+  max_lr: 0.1 # コサインアニーリングの学習率の基本上限値
+  min_lr: 0.001 # コサインアニーリングの学習率の下限値
+  warmup_steps: 10 # コサインアニーリングの各周期で適用するウォームアップステップ数
+
+model:
+  arch: vit_base # vit_small,vit_base,vit_conv_small, vit_conv_base, torchvision_models
+  moco_dim: 256 # 画像の分散表現の次元数
+  moco_mlp_dim: 4096 # MoCoのMLP部分における隠れ層の次元数
+  moco_momentum: 0.99 # MoCoエンコーダーのパラメーター更新で利用するモメンタム
+  moco_temperature: 1.0 # MoCoエンコーダーのハイパーパラメーター
+  moco_momentum_cosine: True # MoCoモメンタムを半周期コサインで漸増させるか
+  stop_grad_conv1: True # Vision Transformerの設定
+
+optimizer:
+  dampening: 0 # LARS
+  eps: 0.00000001 # LARS
+  learning_rate: 0.6 # 初期の学習率
+  nesterov: False # LARS
+  momentum: 0.9 # LARSオプティマイザーで使用するモメンタム
+  optimizer_type: lars # オプティマイザーの種類「lars or adamw」
+  trust_coefficient: 0.001
+  weight_decay: 0.000001 # 重み減衰値
+
+trainer:
+  accelerator: gpu
+  auto_scale_batch_size: True
+  deterministic: True
+  devices: -1
+  log_every_n_steps: 5 # バッチ数が少ないため、ロギングの刻み幅を小さくしている
+  max_epochs: 100
+  # strategy: ddp_fork
+  # sync_batchnorm: True

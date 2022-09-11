@@ -42,8 +42,7 @@ class Solarize(object):
         return ImageOps.solarize(x)
 
 
-def get_augmentations(crop_min: float = 0.08):
-
+def get_augmentations(crop_min: float):
     # 画像データの加工処理郡
     normalize = transforms.Normalize(
         mean=[0.485, 0.456, 0.406],

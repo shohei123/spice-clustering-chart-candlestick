@@ -1,58 +1,118 @@
 import torch
+from torch.optim.optimizer import Optimizer
 
 
-class LARS(torch.optim.Optimizer):
+# Pytorch Lightning BoltsのLARSアルゴリズムを移植
+class LARS(Optimizer):
     """
     LARS optimizer, no rate scaling or weight decay for parameters <= 1D.
+    Large batch training of Convolutional Networks <https://arxiv.org/pdf/1708.03888.pdf>
+
+    Args:
+    params (iterable): iterable of parameters to optimize or dicts defining parameter groups
+    lr (float): learning rate
+    momentum (float, optional): momentum factor (default: 0)
+    weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
+    dampening (float, optional): dampening for momentum (default: 0)
+    nesterov (bool, optional): enables Nesterov momentum (default: False)
+    trust_coefficient (float, optional): trust coefficient for computing LR (default: 0.001)
+    eps (float, optional): eps for division denominator (default: 1e-8)
     """
 
     def __init__(
         self,
         params,
-        lr,
-        weight_decay,
-        momentum,
-        trust_coefficient=0.001
+        eps: float,
+        dampening: int,
+        lr: float,
+        momentum: float,
+        nesterov: bool,
+        trust_coefficient: float,
+        weight_decay: float,
     ):
+
+        if lr < 0.0:
+            raise ValueError(f"Invalid learning rate: {lr}")
+        if momentum < 0.0:
+            raise ValueError(f"Invalid momentum value: {momentum}")
+        if weight_decay < 0.0:
+            raise ValueError(f"Invalid weight_decay value: {weight_decay}")
+
         defaults = dict(
             lr=lr,
-            weight_decay=weight_decay,
             momentum=momentum,
-            trust_coefficient=trust_coefficient
+            dampening=dampening,
+            weight_decay=weight_decay,
+            nesterov=nesterov,
+            trust_coefficient=trust_coefficient,
+            eps=eps,
         )
+
+        if nesterov and (momentum <= 0 or dampening != 0):
+            raise ValueError(
+                "Nesterov momentum requires a momentum and zero dampening"
+            )
+
         super().__init__(params, defaults)
 
-    @torch.no_grad()
-    def step(self):
-        for pram_group in self.param_groups:
-            for param in pram_group["params"]:
-                dp = param.grad
+    def __setstate__(self, state):
+        super().__setstate__(state)
 
-                if dp is None:
+        for group in self.param_groups:
+            group.setdefault("nesterov", False)
+
+    @torch.no_grad()
+    def step(self, closure=None):
+        """
+        Performs a single optimization step.
+        Args:
+            closure (callable, optional):
+            A closure that reevaluates the model and returns the loss.
+        """
+
+        loss = None
+        if closure is not None:
+            with torch.enable_grad():
+                loss = closure()
+
+        # exclude scaling for params with 0 weight decay
+        for group in self.param_groups:
+            weight_decay = group["weight_decay"]
+            momentum = group["momentum"]
+            dampening = group["dampening"]
+            nesterov = group["nesterov"]
+
+            for p in group["params"]:
+                if p.grad is None:
                     continue
 
-                if param.ndim > 1:  # if not normalization gamma/beta or bias
-                    dp = dp.add(param, alpha=pram_group["weight_decay"])
-                    param_norm = torch.norm(param)
-                    update_norm = torch.norm(dp)
-                    one = torch.ones_like(param_norm)
-                    q = torch.where(
-                        param_norm > 0.,
-                        torch.where(
-                            update_norm > 0,
-                            (
-                                pram_group["trust_coefficient"] *
-                                param_norm / update_norm
-                            ),
-                            one
-                        ),
-                        one
-                    )
-                    dp = dp.mul(q)
+                d_p = p.grad
+                p_norm = torch.norm(p.data)
+                g_norm = torch.norm(p.grad.data)
 
-                param_state = self.state[param]
-                if "mu" not in param_state:
-                    param_state["mu"] = torch.zeros_like(param)
-                mu = param_state["mu"]
-                mu.mul_(pram_group["momentum"]).add_(dp)
-                param.add_(mu, alpha=-pram_group["lr"])
+                # lars scaling + weight decay part
+                if weight_decay != 0:
+                    if p_norm != 0 and g_norm != 0:
+                        lars_lr = p_norm / (g_norm + p_norm * weight_decay + group["eps"])
+                        lars_lr *= group["trust_coefficient"]
+
+                        d_p = d_p.add(p, alpha=weight_decay)
+                        d_p *= lars_lr
+
+                # sgd part
+                if momentum != 0:
+                    param_state = self.state[p]
+                    if "momentum_buffer" not in param_state:
+                        buf = param_state["momentum_buffer"] = torch.clone(
+                            d_p).detach()
+                    else:
+                        buf = param_state["momentum_buffer"]
+                        buf.mul_(momentum).add_(d_p, alpha=1 - dampening)
+                    if nesterov:
+                        d_p = d_p.add(buf, alpha=momentum)
+                    else:
+                        d_p = buf
+
+                p.add_(d_p, alpha=-group["lr"])
+
+        return loss
