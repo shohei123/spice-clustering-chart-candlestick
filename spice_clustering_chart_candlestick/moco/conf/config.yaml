@@ -1,9 +1,9 @@
 data:
-  batch_size: 256
+  batch_size: 32
   crop_min: 0.08 # 画像の拡縮処理の最小値
   data_dir: ../datasets/chart
   persistent: False # dp_spawnかつworker>0の場合は、ボトルネック解消のためTrueにする
-  workers: 2
+  workers: 1
 
 general:
   seed: 123
@@ -21,23 +21,23 @@ model:
   moco_dim: 256 # 画像の分散表現の次元数
   moco_mlp_dim: 4096 # MoCoのMLP部分における隠れ層の次元数
   moco_momentum: 0.99 # MoCoエンコーダーのパラメーター更新で利用するモメンタム
-  moco_temperature: 1.0 # MoCoエンコーダーのハイパーパラメーター
   moco_momentum_cosine: True # MoCoモメンタムを半周期コサインで漸増させるか
+  moco_temperature: 1.0 # MoCoエンコーダーのハイパーパラメーター
   stop_grad_conv1: True # Vision Transformerの設定
 
 optimizer:
   dampening: 0 # LARS
   eps: 0.00000001 # LARS
   learning_rate: 0.6 # 初期の学習率
-  nesterov: False # LARS
   momentum: 0.9 # LARSオプティマイザーで使用するモメンタム
+  nesterov: False # LARS
   optimizer_type: lars # オプティマイザーの種類「lars or adamw」
   trust_coefficient: 0.001
   weight_decay: 0.000001 # 重み減衰値
 
 trainer:
   accelerator: gpu
-  auto_scale_batch_size: True
+  # auto_scale_batch_size: True
   deterministic: True
   devices: -1
   log_every_n_steps: 5 # バッチ数が少ないため、ロギングの刻み幅を小さくしている

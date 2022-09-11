@@ -10,12 +10,11 @@ import moco.models as moco_models
 # general
 from functools import partial
 from omegaconf import DictConfig
-from typing import Dict
 
 
 def build_model(
     cfg: DictConfig,
-    cfg_hparams: Dict[str, float, str]
+    cfg_hparams,
 ):
 
     print("モデルの作成 '{}'".format(cfg.model.arch))

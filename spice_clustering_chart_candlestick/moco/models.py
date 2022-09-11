@@ -6,13 +6,13 @@ import pytorch_lightning as pl
 
 # MoCo
 import moco.optimizer
+import moco.adjuster as moco_adjuster
 from moco.calc_contrastive_loss import contrastive_loss
 from moco.build_mlp import build_mlp
-import moco.adjuster as moco_adjuster
+from moco.lr_scheduler import CosineAnnealingWarmupRestarts
 
 # general
 from omegaconf import DictConfig
-from typing import Dict
 
 
 class MoCo(pl.LightningModule):
@@ -20,7 +20,7 @@ class MoCo(pl.LightningModule):
         self,
         base_encoder,
         cfg: DictConfig,
-        cfg_hparams: Dict[str, float, str]
+        cfg_hparams,
     ):
         super(MoCo, self).__init__()
         self.save_hyperparameters(**cfg_hparams)
@@ -116,7 +116,7 @@ class MoCo(pl.LightningModule):
 
         # ラーニングスケジュールの使い方について精査する
         scheduler = {
-            "scheduler": moco_adjuster.CosineAnnealingWarmupRestarts(
+            "scheduler": CosineAnnealingWarmupRestarts(
                 optimizer=optimizer,
                 first_cycle_steps=self.cfg.lr_scheduler.first_cycle_steps,
                 cycle_mult=self.cfg.lr_scheduler.cycle_mult,
