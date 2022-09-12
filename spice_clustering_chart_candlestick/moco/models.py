@@ -99,6 +99,8 @@ class MoCo(pl.LightningModule):
         if self.cfg.optimizer.optimizer_type == "lars":
             optimizer = moco.optimizer.LARS(
                 params=self.parameters(),
+                eps=self.cfg.optimizer.eps,
+                dampening=self.cfg.optimizer.dampening,
                 lr=self.cfg.optimizer.learning_rate,
                 nesterov=self.cfg.optimizer.nesterov,
                 momentum=self.cfg.optimizer.momentum,
