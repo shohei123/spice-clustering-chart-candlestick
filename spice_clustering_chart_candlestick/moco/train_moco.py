@@ -29,7 +29,9 @@ def main(cfg: DictConfig):
     cfg_hparams = flatten_omegaconf(cfg)
 
     cdm = ChartDataModule(
-        **cfg.data
+        # ここから開始
+        # アンパック記法を使わずに、cfg.dataをそのまま渡せるように改変すること
+        cfg_data=cfg.data
     )
 
     model = build_model(
@@ -38,8 +40,8 @@ def main(cfg: DictConfig):
     )
 
     trainer = pl.Trainer(
-        **cfg.trainer,
         callbacks=[callbacks.PrintCallback()],
+        **cfg.trainer,
     )
 
     trainer.fit(
