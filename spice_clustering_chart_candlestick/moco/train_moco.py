@@ -29,17 +29,17 @@ def main(cfg: DictConfig):
     cfg_hparams = flatten_omegaconf(cfg)
 
     cdm = ChartDataModule(
-        cfg.data
+        **cfg.data
     )
 
     model = build_model(
-        cfg,
-        cfg_hparams,
+        cfg=cfg,
+        cfg_hparams=cfg_hparams,
     )
 
     trainer = pl.Trainer(
-        callbacks=[callbacks.PrintCallback()],
         **cfg.trainer,
+        callbacks=[callbacks.PrintCallback()],
     )
 
     trainer.fit(
