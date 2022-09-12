@@ -26,7 +26,7 @@ class ChartDataModule(pl.LightningDataModule):
     def prepare_data(self):
         # 「加工された2枚の画像」がセットで格納されたデータセット
         self.train_dataset = datasets.ImageFolder(
-            self.data_dir,
+            self.cfg.data.data_dir,
             moco_transforms.TwoCropsTransform(
                 torchvision_transforms.Compose(self.aug1),
                 torchvision_transforms.Compose(self.aug2)
@@ -35,7 +35,7 @@ class ChartDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         train_loader = torch_data.DataLoader(
-            self.cfg.data.train_dataset,
+            self.train_dataset,
             batch_size=self.cfg.data.batch_size,
             num_workers=self.cfg.data.workers,
             persistent_workers=self.cfg.data.persistent,
