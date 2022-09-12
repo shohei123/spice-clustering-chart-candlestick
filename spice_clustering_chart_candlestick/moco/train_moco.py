@@ -29,14 +29,12 @@ def main(cfg: DictConfig):
     cfg_hparams = flatten_omegaconf(cfg)
 
     cdm = ChartDataModule(
-        # ここから開始
-        # アンパック記法を使わずに、cfg.dataをそのまま渡せるように改変すること
-        cfg_data=cfg.data
+        cfg.data
     )
 
     model = build_model(
-        cfg=cfg,
-        cfg_hparams=cfg_hparams,
+        cfg,
+        cfg_hparams,
     )
 
     trainer = pl.Trainer(
