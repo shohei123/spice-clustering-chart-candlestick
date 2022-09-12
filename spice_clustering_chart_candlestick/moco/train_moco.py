@@ -1,7 +1,7 @@
 # CLI実行用
-# import sys
-# from rich import print
-# sys.path.append("/home/shohei/crypto/my_code/custom/spice_clustering_chart_candlestick/spice_clustering_chart_candlestick")
+import sys
+from rich import print
+sys.path.append("/home/shohei/crypto/my_code/custom/spice_clustering_chart_candlestick/spice_clustering_chart_candlestick")
 
 # PyTorch Lightning
 import pytorch_lightning as pl
@@ -18,10 +18,11 @@ from utils.utils import flatten_omegaconf
 import pretty_errors
 import hydra
 from omegaconf import DictConfig
-
+from rich import print
 
 @hydra.main(config_path="conf", config_name="config")
 def main(cfg: DictConfig):
+
     if cfg.general.seed is not None:
         pl.seed_everything(seed=cfg.general.seed, workers=True)
 

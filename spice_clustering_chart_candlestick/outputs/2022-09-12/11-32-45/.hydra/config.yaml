@@ -1,0 +1,38 @@
+data:
+  batch_size: 32
+  crop_min: 0.08
+  data_dir: /datasets/img/
+  persistent: false
+  workers: 1
+general:
+  seed: 123
+lr_scheduler:
+  first_cycle_steps: 100
+  cycle_mult: 1
+  gamma: 1.0
+  max_lr: 0.1
+  min_lr: 0.001
+  warmup_steps: 10
+model:
+  arch: vit_base
+  moco_dim: 256
+  moco_mlp_dim: 4096
+  moco_momentum: 0.99
+  moco_momentum_cosine: true
+  moco_temperature: 1.0
+  stop_grad_conv1: true
+optimizer:
+  eps: 1.0e-08
+  dampening: 0
+  learning_rate: 0.6
+  momentum: 0.9
+  nesterov: false
+  optimizer_type: lars
+  trust_coefficient: 0.001
+  weight_decay: 1.0e-06
+trainer:
+  accelerator: gpu
+  deterministic: true
+  devices: -1
+  log_every_n_steps: 5
+  max_epochs: 100

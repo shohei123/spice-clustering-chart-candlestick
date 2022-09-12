@@ -39,13 +39,13 @@ class LARS(Optimizer):
             raise ValueError(f"Invalid weight_decay value: {weight_decay}")
 
         defaults = dict(
+            eps=eps,
+            dampening=dampening,
             lr=lr,
             momentum=momentum,
-            dampening=dampening,
-            weight_decay=weight_decay,
             nesterov=nesterov,
             trust_coefficient=trust_coefficient,
-            eps=eps,
+            weight_decay=weight_decay,
         )
 
         if nesterov and (momentum <= 0 or dampening != 0):

@@ -1,7 +1,7 @@
 data:
   batch_size: 32
   crop_min: 0.08 # 画像の拡縮処理の最小値
-  data_dir: ./datasets/img
+  data_dir: /datasets/img/
   persistent: False # dp_spawnかつworker>0の場合は、ボトルネック解消のためTrueにする
   workers: 1
 
@@ -26,8 +26,8 @@ model:
   stop_grad_conv1: True # Vision Transformerの設定
 
 optimizer:
-  dampening: 0 # LARS
   eps: 0.00000001 # LARS
+  dampening: 0 # LARS
   learning_rate: 0.6 # 初期の学習率
   momentum: 0.9 # LARSオプティマイザーで使用するモメンタム
   nesterov: False # LARS
@@ -36,7 +36,7 @@ optimizer:
   weight_decay: 0.000001 # 重み減衰値
 
 trainer:
-  accelerator: auto
+  accelerator: gpu
   # auto_scale_batch_size: True
   deterministic: True
   devices: -1

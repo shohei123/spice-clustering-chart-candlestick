@@ -102,8 +102,8 @@ class MoCo(pl.LightningModule):
                 eps=self.cfg.optimizer.eps,
                 dampening=self.cfg.optimizer.dampening,
                 lr=self.cfg.optimizer.learning_rate,
-                nesterov=self.cfg.optimizer.nesterov,
                 momentum=self.cfg.optimizer.momentum,
+                nesterov=self.cfg.optimizer.nesterov,
                 trust_coefficient=self.cfg.optimizer.trust_coefficient,
                 weight_decay=self.cfg.optimizer.weight_decay,
             )
