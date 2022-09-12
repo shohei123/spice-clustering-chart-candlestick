@@ -23,7 +23,7 @@ class MoCo(pl.LightningModule):
         cfg_hparams,
     ):
         super(MoCo, self).__init__()
-        self.save_hyperparameters(**cfg_hparams)
+        self.save_hyperparameters("cfg_hparams")
 
         self.cfg = cfg
 
@@ -99,7 +99,7 @@ class MoCo(pl.LightningModule):
         if self.cfg.optimizer.optimizer_type == "lars":
             optimizer = moco.optimizer.LARS(
                 params=self.parameters(),
-                lr=self.self.cfg.optimizer.learning_rate,
+                lr=self.cfg.optimizer.learning_rate,
                 nesterov=self.cfg.optimizer.nesterov,
                 momentum=self.cfg.optimizer.momentum,
                 trust_coefficient=self.cfg.optimizer.trust_coefficient,

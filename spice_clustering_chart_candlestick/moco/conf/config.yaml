@@ -1,7 +1,7 @@
 data:
   batch_size: 32
   crop_min: 0.08 # 画像の拡縮処理の最小値
-  data_dir: ../datasets/chart
+  data_dir: ./datasets/img
   persistent: False # dp_spawnかつworker>0の場合は、ボトルネック解消のためTrueにする
   workers: 1
 

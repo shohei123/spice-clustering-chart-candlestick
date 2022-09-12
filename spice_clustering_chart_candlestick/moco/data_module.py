@@ -35,7 +35,7 @@ class ChartDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         train_loader = torch_data.DataLoader(
-            self.train_dataset,
+            self.cfg.data.train_dataset,
             batch_size=self.cfg.data.batch_size,
             num_workers=self.cfg.data.workers,
             persistent_workers=self.cfg.data.persistent,
