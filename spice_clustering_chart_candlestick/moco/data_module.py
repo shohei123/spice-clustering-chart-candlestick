@@ -13,22 +13,14 @@ import moco.transforms as moco_transforms
 class ChartDataModule(pl.LightningDataModule):
     def __init__(
         self,
-        batch_size: int,
-        crop_min: float,
-        data_dir: str,
-        persistent: bool,
-        workers: int,
+        cfg_data,
     ):
         super().__init__()
-        self.batch_size = batch_size
-        self.crop_min = crop_min
-        self.data_dir = data_dir
-        self.persistent = persistent
-        self.workers = workers
+        self.cfg_data = cfg_data
 
         # 画像の加工処理群の取得
         self.aug1, self.aug2 = moco_transforms.get_augmentations(
-            crop_min=crop_min
+            crop_min=self.cfg_data.crop_min
         )
 
     def prepare_data(self):
@@ -44,9 +36,9 @@ class ChartDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         train_loader = torch_data.DataLoader(
             self.train_dataset,
-            batch_size=self.batch_size,
-            num_workers=self.workers,
-            persistent_workers=self.persistent,
+            batch_size=self.cfg_data.batch_size,
+            num_workers=self.cfg_data.workers,
+            persistent_workers=self.cfg_data.persistent,
             pin_memory=True,  # メモリ領域がページング（分割）されなくなり、処理の高速化が期待できる
             drop_last=True
         )

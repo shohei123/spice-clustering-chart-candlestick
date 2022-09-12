@@ -29,7 +29,7 @@ def main(cfg: DictConfig):
     cfg_hparams = flatten_omegaconf(cfg)
 
     cdm = ChartDataModule(
-        **cfg.data
+        cfg_data=cfg.data
     )
 
     model = build_model(
