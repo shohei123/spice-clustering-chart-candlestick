@@ -2,25 +2,27 @@ import collections
 from omegaconf import OmegaConf
 
 
-def flatten_omegaconf(d, sep='_'):
+def flatten_omegaconf(conf, sep="_"):
 
-    d = OmegaConf.to_container(d)
+    conf = OmegaConf.to_container(conf)
 
-    obj = collections.OrderedDict()
+    dic = collections.OrderedDict()
 
-    def recurse(t, parent_key=''):
-
-        if isinstance(t, list):
-            for i in range(len(t)):
-                recurse(t[i], parent_key + sep + str(i)
-                        if parent_key else str(i))
-        elif isinstance(t, dict):
-            for k, v in t.items():
+    def recurse(conf, parent_key=""):
+        if isinstance(conf, list):
+            for i in range(len(conf)):
+                recurse(
+                    conf[i], parent_key + sep + str(i)
+                    if parent_key else str(i)
+                )
+        elif isinstance(conf, dict):
+            for k, v in conf.items():
                 recurse(v, parent_key + sep + k if parent_key else k)
         else:
-            obj[parent_key] = t
+            dic[parent_key] = conf
 
-    recurse(d)
-    obj = {k: v for k, v in obj.items() if type(v) in [int, float, str]}
+    recurse(conf)
 
-    return
+    dic = {k: v for k, v in dic.items()}
+
+    return dic
